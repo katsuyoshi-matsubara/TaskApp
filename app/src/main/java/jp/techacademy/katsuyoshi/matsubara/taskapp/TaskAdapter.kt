@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 //それぞれのメソッドの中身を実装する前に、アイテムを保持する List を
@@ -14,7 +16,7 @@ import android.widget.TextView
 // これは、Taskクラスを実装するまえに、ListViewの動きを確認できるようにするためです。Task クラスは後のRealmのチャプターで実装します
 class TaskAdapter(context: Context): BaseAdapter() {
     private val mLayoutInflater: LayoutInflater
-    var taskList = mutableListOf<String>()
+    var taskList = mutableListOf<Task>()
 
     init {
         this.mLayoutInflater = LayoutInflater.from(context)
@@ -29,7 +31,7 @@ class TaskAdapter(context: Context): BaseAdapter() {
     }
 
     override fun getItemId(position: Int): Long {
-        return 0
+        return taskList[position].id.toLong()
     }
 
     //次にgetViewメソッドを実装します。そのために、他のxmlリソースのViewを
@@ -51,7 +53,11 @@ class TaskAdapter(context: Context): BaseAdapter() {
         val textView1 = view.findViewById<TextView>(android.R.id.text1)
         val textView2 = view.findViewById<TextView>(android.R.id.text2)
         //後でTaskクラスから情報を取得するように変更する
-        textView1.text = taskList[position]
+        textView1.text = taskList[position].title
+
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE)
+        val date = taskList[position].date
+        textView2.text = simpleDateFormat.format(date)
 
         return view
     }

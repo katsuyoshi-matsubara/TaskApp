@@ -3,6 +3,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt' //これを追加した
+apply plugin: 'realm-android' //これを追加した
 
 android {
     compileSdkVersion 28
