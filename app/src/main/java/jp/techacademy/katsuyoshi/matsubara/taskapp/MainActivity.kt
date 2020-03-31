@@ -1,13 +1,20 @@
 package jp.techacademy.katsuyoshi.matsubara.taskapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import io.realm.Realm
 import io.realm.RealmChangeListener
 import io.realm.Sort
 import java.util.*
 import kotlinx.android.synthetic.main.activity_main.*
+//パッケージ名を含めた文字列をIntentのExtraのキーとして利用するのは、
+// 他のアプリのExtraと間違えないようにするためです。今回のアプリでは
+// 明示的IntentでActivityを呼び出しているので混同の可能性はありませんが、
+// よく使う考え方なので覚えておきましょう。
+const val EXTRA_TASK = "jp.techacademy.katsuyoshi.matsubara.taskapp.TASK"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mRealm: Realm //Realmクラスを保持するmRealmを定義
@@ -35,22 +42,52 @@ class MainActivity : AppCompatActivity() {
         // Realmの設定
         mRealm = Realm.getDefaultInstance() //オブジェクトを取得
         mRealm.addChangeListener(mRealmListener) //mRealmListenerをaddChangeListenerメソッドで設定
+
         //ListViewの設定
         mTaskAdapter = TaskAdapter(this@MainActivity)
+
         //ListViewをタップした時の処理
-        listView1.setOnItemClickListener { parent, view, position, id ->
+        listView1.setOnItemClickListener { parent, _, position, _ ->
             // 入力・編集する画面に遷移させる
+            val task = parent.adapter.getItem(position) as Task
+            val intent = Intent(this@MainActivity, InputActivity::class.java)
+            intent.putExtra(EXTRA_TASK, task.id)
+            startActivity(intent)
         }
         //長押しした時の処理
-        listView1.setOnItemLongClickListener { parent, view, position, id ->
+        listView1.setOnItemLongClickListener { parent, _, position, _ ->
             //タスクを削除する
+            val task = parent.adapter.getItem(position) as Task
+
+            //ダイアログを表示する
+            val builder = AlertDialog.Builder(this@MainActivity)
+
+            builder.setTitle("削除")
+            builder.setMessage(task.title + "を削除しますか")
+
+            builder.setPositiveButton("OK"){_, _ ->
+                val results = mRealm.where(Task::class.java).equalTo("id", task.id).findAll()
+
+                mRealm.beginTransaction()
+                results.deleteAllFromRealm()
+                mRealm.commitTransaction()
+
+                reloadListView()
+            }
+
+            builder.setNegativeButton("CANCEL", null)
+
+            val dialog = builder.create()
+            dialog.show()
+
             true
         }
         // アプリ起動時に表示テスト用のタスクを作成する
         //まだタスク作成画面を実装していないのでonCreateメソッド内で
         // addTaskForTestメソッドを呼び出して addTaskForTestメソッド内で
         // Realmに仮のデータを保存します。
-        addTaskForTest()
+
+        //addTaskForTest()
 
         reloadListView()
     }

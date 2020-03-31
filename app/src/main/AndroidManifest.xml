@@ -12,11 +12,15 @@
         android:theme="@style/AppTheme">
         <activity android:name=".InputActivity">
             android:name=".InputActivity"
+            <!--タイトルバーに表示する名前-->
             android:label="タスク"
-            android:parentActiviryName=".MainActivity"
+            android:parentActivityName=".MainActivity"
+            <!--MainActivityからの遷移時に左上に戻るボタンを表示する-->
+
+            <!--親のActivity（遷移元）を指定-->
             <meta-data
-                android:name="android.support.PARENT_ACTIVIRY"
-                android:value="jp.techacademy.katsuyoshimatsubara.taskapp.MainActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="jp.techacademy.katsuyoshi.matsubara.taskapp.MainActivity"/>
         </activity>
         <activity
             android:name=".MainActivity"
