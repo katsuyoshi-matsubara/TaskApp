@@ -1,5 +1,8 @@
 package jp.techacademy.katsuyoshi.matsubara.taskapp
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -75,6 +78,23 @@ class MainActivity : AppCompatActivity() {
                 mRealm.beginTransaction()
                 results.deleteAllFromRealm()
                 mRealm.commitTransaction()
+
+                //タスクを削除したときに、InputActivity.ktのval alarmManager = getSystemService...
+                // で設定したアラームを解除する必要があります。
+                // MainActivityクラスのonCreateメソッドで設定したOnItemLongClickListener
+                // の中でデータベースからタスクを削除するタイミングでアラームを解除します。
+                // セットした時と同じIntent、PendingIntentを作成し、AlarmManagerクラスの
+                // cancelメソッドでキャンセルします。
+                val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
+                val resultPendingIntent = PendingIntent.getBroadcast(
+                    this@MainActivity,
+                    task.id,
+                    resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+
+                val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                alarmManager.cancel(resultPendingIntent)
 
                 reloadListView()
             }

@@ -1,7 +1,11 @@
 package jp.techacademy.katsuyoshi.matsubara.taskapp
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.Toolbar
@@ -170,5 +174,35 @@ class InputActivity : AppCompatActivity() {
         realm.commitTransaction()
 
         realm.close()
+
+        //まずTaskAlarmReceiverを起動するIntentを作成します。そしてそのExtra
+        // にタスクを設定します。これはTaskAlarmReceiverがブロードキャストを
+        // 受け取った後、タスクのタイトルなどを表示する通知を発行するために
+        // タスクの情報が必要になるからです。
+        val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
+        resultIntent.putExtra(EXTRA_TASK, mTask!!.id)
+
+        //PendingIntentを作成します。第2引数にタスクのIDを指定しています。タスクを
+        // 削除する際に指定したアラームも合わせて削除する必要があります。アラーム
+        // を削除しないとタスクを削除したにも関わらず通知を表示してしまうことに
+        // なるからです。そしそのPendingIntentを一意に識別するためにタスクのIDを
+        // 設定します。
+        val resultPendingIntent = PendingIntent.getBroadcast(
+            this,
+            mTask!!.id,
+            resultIntent,
+            //PendingIntent.FLAG_UPDATE_CURRENTは既存のPendingIntentがあれば、
+            // それはそのままでextraのデータだけ置き換えるという指定です。タスクを
+            // 更新した際にはextraのデータだけ、つまりタスクのデータだけ置き換え
+            // たいのでこの指定にします。
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+//AlarmManagerはActivityのgetSystemServiceメソッドに引数ALARM_SERVICEを
+// 与えて取得します。setメソッドの第一引数のRTC_WAKEUPは「UTC時間を指定する。
+// 画面スリープ中でもアラームを発行する」という指定です。第二引数でタスクの
+// 時間をUTC時間で指定しています。なお、getSystemService メソッドはシステム
+// レベルのサービスを取得するためのメソッドです。
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, resultPendingIntent)
     }
 }
