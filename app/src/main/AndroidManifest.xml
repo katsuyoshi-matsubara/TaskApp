@@ -10,18 +10,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".InputActivity">
-            android:name=".InputActivity"
-            <!--タイトルバーに表示する名前-->
-            android:label="タスク"
-            android:parentActivityName=".MainActivity"
-            <!--MainActivityからの遷移時に左上に戻るボタンを表示する-->
-
-            <!--親のActivity（遷移元）を指定-->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="jp.techacademy.katsuyoshi.matsubara.taskapp.MainActivity"/>
-        </activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -32,6 +20,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+        <activity
+            android:name=".InputActivity"
+            android:label="タスク"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainActivity">
+            <!--MainActivityからの遷移時に左上に戻るボタンを表示する-->
 
+            <!--親のActivity（遷移元）を指定-->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="jp.techacademy.katsuyoshi.matsubara.taskapp.MainActivity"/>
+        </activity>
+    </application>
 </manifest>

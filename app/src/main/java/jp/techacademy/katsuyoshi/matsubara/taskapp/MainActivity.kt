@@ -10,6 +10,7 @@ import io.realm.RealmChangeListener
 import io.realm.Sort
 import java.util.*
 import kotlinx.android.synthetic.main.activity_main.*
+
 //パッケージ名を含めた文字列をIntentのExtraのキーとして利用するのは、
 // 他のアプリのExtraと間違えないようにするためです。今回のアプリでは
 // 明示的IntentでActivityを呼び出しているので混同の可能性はありませんが、
@@ -35,8 +36,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            val intent = Intent(this@MainActivity, InputActivity::class.java)
+            startActivity(intent)
+
+            // Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+            //   .setAction("Action", null).show()
         }
 
         // Realmの設定
@@ -65,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             builder.setTitle("削除")
             builder.setMessage(task.title + "を削除しますか")
 
-            builder.setPositiveButton("OK"){_, _ ->
+            builder.setPositiveButton("OK") { _, _ ->
                 val results = mRealm.where(Task::class.java).equalTo("id", task.id).findAll()
 
                 mRealm.beginTransaction()
@@ -102,7 +106,8 @@ class MainActivity : AppCompatActivity() {
     // このようにコピーして渡す必要があります。
     private fun reloadListView() {
         // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
-        val taskRealmResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
+        val taskRealmResults =
+            mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
         // 上記の結果を、TaskList としてセットする
         mTaskAdapter.taskList = mRealm.copyFromRealm(taskRealmResults)
         // TaskのListView用のアダプタに渡す

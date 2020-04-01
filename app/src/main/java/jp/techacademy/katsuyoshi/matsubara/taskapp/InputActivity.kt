@@ -29,7 +29,7 @@ class InputActivity : AppCompatActivity() {
                 mYear = year
                 mMonth = month
                 mDay = dayOfMonth
-                val dateString = mYear.toString() + "/" + String.format("%02d", mMonth) + 1 + "/" + String.format("%02d", mDay)
+                val dateString = mYear.toString() + "/" + String.format("%02d", mMonth + 1) + "/" + String.format("%02d", mDay)
                 date_button.text = dateString
             }, mYear, mMonth, mDay)
         datePickerDialog.show()
@@ -70,7 +70,7 @@ class InputActivity : AppCompatActivity() {
         //UI部品の設定
         date_button.setOnClickListener(mOnDateClickListener)
         times_button.setOnClickListener(mOnTimeClickListener)
-        done_button.setOnClickListener(mOnDateClickListener)
+        done_button.setOnClickListener(mOnDoneClickListener)
 
         // EXTRA_TASK から Task の id を取得して、
         // id から Task のインスタンスを取得する
@@ -119,6 +119,7 @@ class InputActivity : AppCompatActivity() {
             calendar.time = mTask!!.date
             mYear = calendar.get(Calendar.YEAR)
             mMonth = calendar.get(Calendar.MONTH)
+            mDay = calendar.get(Calendar.DAY_OF_MONTH)
             mHour = calendar.get(Calendar.HOUR_OF_DAY)
             mMinute = calendar.get(Calendar.MINUTE)
 
