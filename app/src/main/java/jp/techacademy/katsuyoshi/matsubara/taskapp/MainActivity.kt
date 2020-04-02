@@ -13,6 +13,7 @@ import io.realm.RealmChangeListener
 import io.realm.Sort
 import java.util.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_input.*
 
 //パッケージ名を含めた文字列をIntentのExtraのキーとして利用するのは、
 // 他のアプリのExtraと間違えないようにするためです。今回のアプリでは
@@ -113,6 +114,12 @@ class MainActivity : AppCompatActivity() {
 
         //addTaskForTest()
 
+        //課題filter category button
+        filterCategoryButton.setOnClickListener {
+            filterCategory()
+        }
+
+
         reloadListView()
     }
 
@@ -140,6 +147,25 @@ class MainActivity : AppCompatActivity() {
         //mTaskAdapter.taskList = taskList
         //listView1.adapter = mTaskAdapter
         //mTaskAdapter.notifyDataSetChanged()
+    }
+    //課題categoryで絞り込む
+    private fun filterCategory() {
+        // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
+
+        val taskRealmResults =
+            mRealm.where(Task::class.java)//.findAll().sort("date", Sort.DESCENDING)
+                    .contains("category", categoryFilterEditText.text.toString())
+                .findAll().sort("date", Sort.DESCENDING)
+
+        // 上記の結果を、TaskList としてセットする
+        mTaskAdapter.taskList = mRealm.copyFromRealm(taskRealmResults)
+        // TaskのListView用のアダプタに渡す
+        listView1.adapter = mTaskAdapter
+        // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+        mTaskAdapter.notifyDataSetChanged()
+
+
+
     }
 
     //最後にonDestroyメソッドをオーバーライドしてRealmクラスのcloseメソッド

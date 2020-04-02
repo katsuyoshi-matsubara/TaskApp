@@ -100,7 +100,7 @@ class InputActivity : AppCompatActivity() {
         // 新規作成する場合です。新規作成の場合は遷移元であるMainActivityから
         // EXTRA_TASK は渡されないので taskId に -1 が代入され、 mTask
         // には null が代入されます。また mTask がnullであれば、
-        // カレンダーから、現在時刻をmYear、mMonth、mDay、mHour、mMinut
+        // カレンダーから、現在時刻をmYear、mMonth、mDay、mHour、mMinute
         // に設定します。MainActivityから EXTRA_TASK が渡ってきた場合は更新のため、
         // 渡ってきたタスクの時間を設定します。
         mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
@@ -118,6 +118,7 @@ class InputActivity : AppCompatActivity() {
             //更新の場合
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
+            category_edit_text.setText(mTask!!.category)
 
             val calendar = Calendar.getInstance()
             calendar.time = mTask!!.date
@@ -159,9 +160,11 @@ class InputActivity : AppCompatActivity() {
         }
         val title = title_edit_text.text.toString()
         val content = content_edit_text.text.toString()
+        val category = category_edit_text.text.toString()
 
         mTask!!.title = title
         mTask!!.contents = content
+        mTask!!.category = category
         val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
         val date = calendar.time
         mTask!!.date = date
